@@ -10,6 +10,7 @@ Projeto simples de API REST utilizando o framework Spring
 ```bash
 CREATE TABLE public.fornecedor (
   id_fornecedor serial4 NOT NULL,
+  cnpj int8 NOT NULL,
   tipo varchar(255) NULL,
   razao_social varchar(255),
   uf varchar(2) NULL,
