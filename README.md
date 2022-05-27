@@ -40,6 +40,7 @@ CREATE TABLE public.produto (
   nome_produto varchar(255),
   id_fornecedor int8 NOT NULL,
   id_categoria int8 NOT NULL,
+  imagem_produto varchar(255),
   PRIMARY KEY (id_produto),
   FOREIGN KEY (id_fornecedor) REFERENCES public.fornecedor(id_fornecedor),
   FOREIGN KEY (id_categoria) REFERENCES public.categoria(id_categoria)
