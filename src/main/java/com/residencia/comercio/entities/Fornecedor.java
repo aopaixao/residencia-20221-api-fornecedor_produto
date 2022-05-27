@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -24,8 +25,7 @@ public class Fornecedor {
 	private Integer idFornecedor;
 
 	@Column(name = "cnpj")
-	//@NotEmpty(message = "O número do CNPJ não pode ficar em branco.")
-	//@Digits(message="O CNPJ deve conter 14 números.", fraction = 0, integer = 14)
+	@NotEmpty(message = "O número do CNPJ não pode ficar em branco.")
 	private String cnpj;
 
 	@Column(name = "tipo")

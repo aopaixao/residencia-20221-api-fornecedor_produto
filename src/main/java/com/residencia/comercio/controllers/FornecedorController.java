@@ -3,12 +3,13 @@ package com.residencia.comercio.controllers;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +26,11 @@ import com.residencia.comercio.entities.Fornecedor;
 import com.residencia.comercio.exceptions.NoSuchElementFoundException;
 import com.residencia.comercio.services.FornecedorService;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @RequestMapping("/fornecedor")
+@Validated
 public class FornecedorController {
 	@Autowired
 	FornecedorService fornecedorService;
@@ -41,7 +42,8 @@ public class FornecedorController {
 	}
 	
 	@GetMapping("/cnpj/{cnpj}")
-	public ResponseEntity<CadastroEmpresaReceitaDTO> consultarDadosPorCnpj(String cnpj) {
+	public ResponseEntity<CadastroEmpresaReceitaDTO> consultarDadosPorCnpj(
+			@PathVariable @NotBlank @Pattern(regexp="^[0-9]{14}", message="O CNPJ deve conter apenas números, com 14 dígitos.") String cnpj) {
 		CadastroEmpresaReceitaDTO cadEmpresaDTO = fornecedorService.consultarDadosPorCnpj(cnpj);
 		if(null == cadEmpresaDTO)
 			throw new NoSuchElementFoundException("Não foram encontrados dados para o CNPJ informado");
@@ -49,16 +51,22 @@ public class FornecedorController {
 			return new ResponseEntity<>(cadEmpresaDTO, HttpStatus.OK);
 	}
 
+	@GetMapping("/cnpj/query")
+	public ResponseEntity<CadastroEmpresaReceitaDTO> queryConsultarDadosPorCnpj(
+			@RequestParam @NotBlank @Pattern(regexp="^[0-9]{14}", message="O CNPJ deve conter apenas números, com 14 dígitos.") String cnpj) {
+		CadastroEmpresaReceitaDTO cadEmpresaDTO = fornecedorService.consultarDadosPorCnpj(cnpj);
+		if(null == cadEmpresaDTO)
+			throw new NoSuchElementFoundException("Não foram encontrados dados para o CNPJ informado");
+		else
+			return new ResponseEntity<>(cadEmpresaDTO, HttpStatus.OK);
+	}
+	
 	@GetMapping("/dto/{id}")
 	public ResponseEntity<FornecedorDTO> findFornecedorDTOById(@PathVariable Integer id) {
 		FornecedorDTO fornecedorDTO = fornecedorService.findFornecedorDTOById(id);
 		return new ResponseEntity<>(fornecedorDTO, HttpStatus.OK);
 	}
 	
-	/*@Parameter(
-		    name =  "Id",
-		    example = "10",
-		    required = true)*/
 	@ApiResponse(responseCode = "200", description = "Registro Encontrado")
 	@ApiResponse(responseCode = "404", description = "Registro Não Encontrado")
 	@GetMapping("/{id}")
@@ -70,16 +78,16 @@ public class FornecedorController {
 			return new ResponseEntity<>(fornecedor, HttpStatus.OK);
 	}
 	
-	@PostMapping
-	public ResponseEntity<Fornecedor> saveFornecedor(@RequestParam String cnpj) {
+	@PostMapping("/cnpj")
+	public ResponseEntity<Fornecedor> saveFornecedor(@Pattern(regexp="^[0-9]{14}", message="O CNPJ deve conter apenas números, com 14 dígitos.") @RequestBody String cnpj) {
 		Fornecedor fornecedor = new Fornecedor();
 		Fornecedor novoFornecedor = fornecedorService.saveFornecedor(fornecedor);
 		return new ResponseEntity<>(novoFornecedor, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/completo")
+	@PostMapping
 	public ResponseEntity<Fornecedor> saveFornecedorCompleto(
-			@RequestBody Fornecedor fornecedor) {
+			@Valid @RequestBody Fornecedor fornecedor) {
 		Fornecedor novoFornecedor = fornecedorService.saveFornecedor(fornecedor);
 		return new ResponseEntity<>(novoFornecedor, HttpStatus.CREATED);
 	}
