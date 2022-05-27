@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.residencia.comercio.dtos.CadastroEmpresaReceitaDTO;
 import com.residencia.comercio.dtos.FornecedorDTO;
 import com.residencia.comercio.entities.Fornecedor;
 import com.residencia.comercio.exceptions.NoSuchElementFoundException;
@@ -38,6 +39,15 @@ public class FornecedorController {
 		List<Fornecedor> fornecedorList = fornecedorService.findAllFornecedor();
 		return new ResponseEntity<>(fornecedorList, HttpStatus.OK);
 	}
+	
+	@GetMapping("/cnpj/{cnpj}")
+	public ResponseEntity<CadastroEmpresaReceitaDTO> consultarDadosPorCnpj(String cnpj) {
+		CadastroEmpresaReceitaDTO cadEmpresaDTO = fornecedorService.consultarDadosPorCnpj(cnpj);
+		if(null == cadEmpresaDTO)
+			throw new NoSuchElementFoundException("Não foram encontrados dados para o CNPJ informado");
+		else
+			return new ResponseEntity<>(cadEmpresaDTO, HttpStatus.OK);
+	}
 
 	@GetMapping("/dto/{id}")
 	public ResponseEntity<FornecedorDTO> findFornecedorDTOById(@PathVariable Integer id) {
@@ -45,6 +55,12 @@ public class FornecedorController {
 		return new ResponseEntity<>(fornecedorDTO, HttpStatus.OK);
 	}
 	
+	/*@Parameter(
+		    name =  "Id",
+		    example = "10",
+		    required = true)*/
+	@ApiResponse(responseCode = "200", description = "Registro Encontrado")
+	@ApiResponse(responseCode = "404", description = "Registro Não Encontrado")
 	@GetMapping("/{id}")
 	public ResponseEntity<Fornecedor> findFornecedorById(@PathVariable Integer id) {
 		Fornecedor fornecedor = fornecedorService.findFornecedorById(id);
@@ -62,7 +78,8 @@ public class FornecedorController {
 	}
 
 	@PostMapping("/completo")
-	public ResponseEntity<Fornecedor> saveFornecedorCompleto(@RequestBody Fornecedor fornecedor) {
+	public ResponseEntity<Fornecedor> saveFornecedorCompleto(
+			@RequestBody Fornecedor fornecedor) {
 		Fornecedor novoFornecedor = fornecedorService.saveFornecedor(fornecedor);
 		return new ResponseEntity<>(novoFornecedor, HttpStatus.CREATED);
 	}

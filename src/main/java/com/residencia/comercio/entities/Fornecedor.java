@@ -10,17 +10,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "fornecedor")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class,
-    property = "idFornecedor")
+@JsonIdentityInfo(scope = Fornecedor.class,generator = ObjectIdGenerators.PropertyGenerator.class,property = "idFornecedor")
 public class Fornecedor {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +26,7 @@ public class Fornecedor {
 	@Column(name = "cnpj")
 	//@NotEmpty(message = "O número do CNPJ não pode ficar em branco.")
 	//@Digits(message="O CNPJ deve conter 14 números.", fraction = 0, integer = 14)
-	private Integer cnpj;
+	private String cnpj;
 
 	@Column(name = "tipo")
 	private String tipo;
@@ -74,9 +70,8 @@ public class Fornecedor {
 	@Column(name = "data_abertura")
 	private Date dataAbertura;
 
-	//@OneToMany(mappedBy = "fornecedor")
-	//@JsonManagedReference
-	//private List<Produto> produtoList;
+	@OneToMany(mappedBy = "fornecedor")
+	private List<Produto> produtoList;
 	
 	public Integer getIdFornecedor() {
 		return idFornecedor;
@@ -86,11 +81,11 @@ public class Fornecedor {
 		this.idFornecedor = idFornecedor;
 	}
 
-	public Integer getCnpj() {
+	public String getCnpj() {
 		return cnpj;
 	}
 
-	public void setCnpj(Integer cnpj) {
+	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
 	}
 
@@ -204,6 +199,14 @@ public class Fornecedor {
 
 	public void setDataAbertura(Date dataAbertura) {
 		this.dataAbertura = dataAbertura;
+	}
+
+	public List<Produto> getProdutoList() {
+		return produtoList;
+	}
+
+	public void setProdutoList(List<Produto> produtoList) {
+		this.produtoList = produtoList;
 	}
 	
 }

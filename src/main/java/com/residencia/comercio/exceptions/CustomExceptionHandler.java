@@ -26,7 +26,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
    
     @ExceptionHandler(NoSuchElementFoundException.class)
-    public final ResponseEntity<Object> handleUserNotFoundException(NoSuchElementFoundException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleNoSuchElementFoundException(NoSuchElementFoundException ex, WebRequest request) {
       List<String> details = new ArrayList<>();
       details.add(ex.getLocalizedMessage());
       HttpStatus httpStatus = HttpStatus.NOT_FOUND;
@@ -34,14 +34,36 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
       return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public final ResponseEntity<Object> handleHttpMessageNotReadableException (HttpMessageNotReadableException ex, WebRequest request) {
+    	List<String> details = new ArrayList<>();
+    	details.add(ex.getLocalizedMessage());
+    	HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    	ErrorResponse error = new ErrorResponse(httpStatus.value(), "Erro nos Dados da Requisição", details);
+    	return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    /*
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
       List<String> details = new ArrayList<>();
       for(ObjectError error : ex.getBindingResult().getAllErrors()) {
         details.add(error.getDefaultMessage());
       }
       HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-      ErrorResponse error = new ErrorResponse(httpStatus.value(), "Falha na Validação dos Dados da Requisição", details);
+      ErrorResponse error = new ErrorResponse(httpStatus.value(), "Erro nos dos Dados da Requisição", details);
       return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+    */
+    
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    	List<String> details = new ArrayList<>();
+    	for(ObjectError error : ex.getBindingResult().getAllErrors()) {
+    		details.add(error.getDefaultMessage());
+    	}
+    	HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    	ErrorResponse error = new ErrorResponse(httpStatus.value(), "Falha na Validação dos Dados da Requisição", details);
+    	return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

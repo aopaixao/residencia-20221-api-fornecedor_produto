@@ -42,6 +42,8 @@ public class CategoriaController {
 		return new ResponseEntity<>(categoriaDTO, HttpStatus.OK);
 	}
 	
+	@ApiResponse(responseCode = "200", description = "Registro Encontrado")
+	@ApiResponse(responseCode = "404", description = "Registro Não Encontrado")
 	@GetMapping("/{id}")
 	public ResponseEntity<Categoria> findCategoriaById(@PathVariable Integer id) {
 		Categoria categoria = categoriaService.findCategoriaById(id);
@@ -52,7 +54,7 @@ public class CategoriaController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Categoria> saveCategoria(@RequestBody Categoria categoria) {
+	public ResponseEntity<Categoria> saveCategoria(@Valid @RequestBody Categoria categoria) {
 		Categoria novoCategoria = categoriaService.saveCategoria(categoria);
 		return new ResponseEntity<>(novoCategoria, HttpStatus.CREATED);
 	}
