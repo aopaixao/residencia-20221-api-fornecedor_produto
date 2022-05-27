@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "produto")
-@JsonIdentityInfo(scope = Produto.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "idProduto")
+@JsonIdentityInfo(scope = Produto.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "idProduto")
 public class Produto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +26,9 @@ public class Produto {
 
 	@Column(name = "nome_produto")
 	private String nomeProduto;
+
+	@Column(name = "imagem_produto")
+	private String imagemProduto;
 
 	@ManyToOne
 	@JoinColumn(name = "id_fornecedor", referencedColumnName = "id_fornecedor")
@@ -57,6 +60,14 @@ public class Produto {
 
 	public void setNomeProduto(String nomeProduto) {
 		this.nomeProduto = nomeProduto;
+	}
+
+	public String getImagemProduto() {
+		return imagemProduto;
+	}
+
+	public void setImagemProduto(String imagemProduto) {
+		this.imagemProduto = imagemProduto;
 	}
 
 	public Fornecedor getFornecedor() {
