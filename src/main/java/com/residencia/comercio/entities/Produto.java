@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -19,8 +20,10 @@ public class Produto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_produto")
+	@NotBlank
 	private Integer idProduto;
 
+	@NotBlank(message = "O sku do produto não pode estar vazio.")
 	@Column(name = "sku")
 	private String sku;
 
@@ -37,6 +40,11 @@ public class Produto {
 	@ManyToOne
 	@JoinColumn(name = "id_categoria", referencedColumnName = "id_categoria")
 	private Categoria categoria;
+	
+	/*
+	@OneToOne(mappedBy="produto")
+	private Estoque estoque;
+	*/
 
 	public Integer getIdProduto() {
 		return idProduto;

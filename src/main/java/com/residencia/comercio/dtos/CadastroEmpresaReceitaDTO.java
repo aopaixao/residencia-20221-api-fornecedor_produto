@@ -1,5 +1,7 @@
 package com.residencia.comercio.dtos;
 
+import java.util.List;
+
 public class CadastroEmpresaReceitaDTO {
 
 	private String situacao;

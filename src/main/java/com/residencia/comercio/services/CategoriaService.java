@@ -1,10 +1,13 @@
 package com.residencia.comercio.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.comercio.dtos.CategoriaDTO;
 import com.residencia.comercio.entities.Categoria;
 import com.residencia.comercio.repositories.CategoriaRepository;
@@ -13,6 +16,12 @@ import com.residencia.comercio.repositories.CategoriaRepository;
 public class CategoriaService {
 	@Autowired
 	CategoriaRepository categoriaRepository;
+	
+	@Autowired
+	Arquivo2Service arquivoService;
+	
+	@Autowired
+	MailService emailService;
 	
 	public List<Categoria> findAllCategoria(){
 		return categoriaRepository.findAll();
@@ -72,5 +81,41 @@ public class CategoriaService {
 		CategoriaDTO categoriaDTO = new CategoriaDTO();
 		categoriaDTO.setIdCategoria(categoria.getIdCategoria());
 		return categoriaDTO;
+	}
+	
+	public Categoria saveCategoriaComFoto(String categoriaString, MultipartFile file) throws Exception {
+		
+		Categoria categoriaConvertida = new Categoria();
+		try {
+			ObjectMapper objMapper = new ObjectMapper();
+			categoriaConvertida = objMapper.readValue(categoriaString, Categoria.class);
+		}catch(IOException e) {
+			System.out.println("Ocorreu um erro na conversão");
+		}
+		
+		/*
+		List<Categoria> nomesImagemList = repositoryCategoria.findAllByNomeImagem(file.getOriginalFilename());
+		if(nomesImagemList.isEmpty(){
+		}else{
+			for(String nome : nomesImagemList){
+				//...
+			}
+		}
+		
+		*/
+		
+		Categoria categoriaBD = categoriaRepository.save(categoriaConvertida);
+		categoriaBD.setNomeImagem(categoriaBD.getIdCategoria()+"_"+file.getOriginalFilename());
+		Categoria categoriaAtualizada = categoriaRepository.save(categoriaBD);
+		
+		//Chamando o metodo que fara a copia do arquivo para a pasta definida
+		arquivoService.criarArquivo(categoriaBD.getIdCategoria()+"_"+file.getOriginalFilename(), file);
+		
+		//Cuidado para definir um endereco de destinatario valido abaixo
+		String corpoEmail = "Foi cadastrada uma nova categoria: " + categoriaAtualizada.toString(); 
+		emailService.enviarEmailTexto("teste@teste.com", "Cadastro de Categoria", corpoEmail);
+
+		
+		return categoriaAtualizada;
 	}
 }

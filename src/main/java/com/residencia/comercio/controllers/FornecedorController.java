@@ -53,7 +53,7 @@ public class FornecedorController {
 
 	@GetMapping("/cnpj/query")
 	public ResponseEntity<CadastroEmpresaReceitaDTO> queryConsultarDadosPorCnpj(
-			@RequestParam @NotBlank @Pattern(regexp="^[0-9]{14}", message="O CNPJ deve conter apenas números, com 14 dígitos.") String cnpj) {
+			@RequestParam @Pattern(regexp="^[0-9]{14}", message="O CNPJ deve conter apenas números, com 14 dígitos.") String cnpj) {
 		CadastroEmpresaReceitaDTO cadEmpresaDTO = fornecedorService.consultarDadosPorCnpj(cnpj);
 		if(null == cadEmpresaDTO)
 			throw new NoSuchElementFoundException("Não foram encontrados dados para o CNPJ informado");
